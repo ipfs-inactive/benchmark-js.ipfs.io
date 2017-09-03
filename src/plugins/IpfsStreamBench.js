@@ -4,7 +4,7 @@ const EventEmitter = require('events')
 
 export default function (options) {
   const event = new EventEmitter()
-  const NS_PER_SEC = 1e9
+  // const NS_PER_SEC = 1e9
   const started = options.started
   const intervalTimeout = options.interval || 0.01
 
@@ -20,13 +20,15 @@ export default function (options) {
       min: 0,
       max: 0,
       avg: 0,
-      media: 0
+      median: 0
     },
-    lastRate: 0
+    overallRate: 0
   }
   const interval = setInterval(() => {
-    const diff = hrtime(started)
-    metrics.elapsed = diff[0] * NS_PER_SEC + diff[1]
+    metrics.elapsed = duration(started)
+    metrics.overallRate = speed(metrics.received, duration(started))
+    metrics.rates = calcRates(metrics.chunks.map(chunk => chunk.rate))
+
     event.emit('interval', _.cloneDeep(metrics))
   }, intervalTimeout)
 
@@ -37,23 +39,36 @@ export default function (options) {
         // Ignore zero-length chunks, they produce zero min rate
         if (data.length === 0) return
 
+        metrics.received += data.length
+
+        const lastHr = (metrics.chunks.length > 0)
+          ? metrics.chunks[metrics.chunks.length - 1].hrtime
+          : started
+
+        const lastElapsed = duration(lastHr)
         const chunk = {
           time: Date.now(),
           hrtime: hrtime(),
           bytes: data.length,
-          rate: data.length / metrics.elapsed * NS_PER_SEC
+          elaspedSinceLast: duration(lastHr),
+          rate: speed(metrics.received, duration(started))
         }
+
         metrics.chunks.push(chunk)
-        metrics.received += data.length
+
         metrics.rates = calcRates(metrics.chunks.map(chunk => chunk.rate))
-        metrics.lastRate = chunk.rate
+        metrics.overallRate = speed(metrics.received, duration(started))
+
         event.emit('data', _.cloneDeep(metrics))
       })
 
       file.content.once('end', data => {
         clearInterval(interval)
+
         metrics.rates = calcRates(metrics.chunks.map(chunk => chunk.rate))
         metrics.finished = Date.now()
+        metrics.overallRate = speed(metrics.received, duration(started))
+
         event.emit('end', _.cloneDeep(metrics))
         event.removeAllListeners()
       })
@@ -66,26 +81,38 @@ export default function (options) {
   return event
 }
 
+const duration = (start) => {
+  const nsPerSec = 1e9
+  const time = hrtime(start)
+  // In seconds
+  return (time[0] * nsPerSec + time[1]) / nsPerSec
+}
+
 const calcRates = (rates) => {
   rates.sort(function (a, b) {
     if (a > b) return 1
     else if (a === b) return 0
     return -1
   })
-  const min = rates[0]
-  const max = rates[rates.length - 1]
-  const avg = rates.reduce((p, c) => p + c, 0) / rates.length
+  const min = rates[0] || 0
+  const max = rates[rates.length - 1] || 0
+  const avg = rates.reduce((p, c) => p + c, 0) / rates.length || 0
 
   const middle = Math.floor(rates.length / 2)
   const isEven = rates.length % 2 === 0
   const median = isEven
-    ? (rates[middle] + rates[middle - 1]) / 2
-    : rates[middle]
+    ? (rates[middle] + rates[middle - 1]) / 2 || 0
+    : rates[middle] || 0
 
   return {
-    min: min,
-    max: max,
-    avg: avg,
-    median: median
+    min,
+    max,
+    median,
+    avg
   }
+}
+
+const speed = (size, time) => {
+  if (size === 0) return 0
+  return Math.round(size / (time || 1))
 }
