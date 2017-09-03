@@ -1,0 +1,7 @@
+export const FOO = 'FOO'
+export const INIT_NODE = 'INIT_NODE'
+export const UPDATE_NODE = 'UPDATE_NODE'
+export const UPDATE_PEERS = 'UPDATE_PEERS'
+export const PEERS_STATUS = 'PEERS_STATUS'
+export const UPDATE_BENCHMARKS = 'UPDATE_BENCHMARKS'
+export const NODE_INFO_VISIBILITY = 'NODE_INFO_VISIBILITY'
