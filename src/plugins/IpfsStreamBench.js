@@ -45,7 +45,7 @@ export default function (options) {
           ? metrics.chunks[metrics.chunks.length - 1].hrtime
           : started
 
-        const lastElapsed = duration(lastHr)
+        // const lastElapsed = duration(lastHr)
         const chunk = {
           time: Date.now(),
           hrtime: hrtime(),

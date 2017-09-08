@@ -8,11 +8,14 @@
         <h1>IPFS Browser Stream Benchmarks</h1>
         <p>A small utility to test ipfs's get streaming performance (especially for large files) and see some metrics.</p>
         <p> Choose one of the preselected files below or test with a custom one</p>
+        <br>
+          <el-button v-if="status === 'stopped'" type="primary" size="large" @click="startNode">Start your node</el-button>
       </div>
 
       <el-tabs v-model="activeTab">
-        <el-tab-pane label="87 KB" name="first">
+        <el-tab-pane label="87 kB" name="first">
         <Stream
+          :peers="peers"
           :nodeStatus="status"
           @submit="getFile"
           :benchmarks="getBenchmarkByHash('QmTKZgRNwDNZwHtJSjCp6r5FYefzpULfy37JvMt9DwvXse/poster.jpg')"
@@ -21,6 +24,7 @@
        </el-tab-pane>
        <el-tab-pane label="1 MB" name="second">
         <Stream
+          :peers="peers"
           :nodeStatus="status"
           @submit="getFile"
           :benchmarks="getBenchmarkByHash('QmTca4A43f4kEvzTouvYTegtp6KobixRqweV12NrvwwtFP')"
@@ -29,6 +33,7 @@
        </el-tab-pane>
        <el-tab-pane label="22 MB" name="third">
         <Stream
+          :peers="peers"
           :nodeStatus="status"
           @submit="getFile"
           :benchmarks="getBenchmarkByHash('QmTKZgRNwDNZwHtJSjCp6r5FYefzpULfy37JvMt9DwvXse/video.webm')"
@@ -56,7 +61,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getFile']),
+    ...mapActions(['getFile', 'startNode']),
     getBenchmarkByHash (hash) {
       return this.benchmarks.find(bench => bench.hash === hash)
     }
@@ -64,7 +69,8 @@ export default {
   computed: {
     ...mapState({
       benchmarks: state => state.benchmarks,
-      status: state => state.ipfs.status
+      status: state => state.ipfs.status,
+      peers: state => state.ipfs.peers
     })
   }
 }

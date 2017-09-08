@@ -3,7 +3,7 @@
   <el-menu class="el-menu-demo" mode="horizontal">
     <el-menu-item index="1"><a href="https://github.com/ipfs/js-ipfs" target="_blank"><img class="logo" src="../assets/ipfs-logo.png"/></a></el-menu-item>
 
-    <el-menu-item index="5" @click="openNodeInfo"> <el-button :plain="true" size="small" type="info">Info</el-button> </el-menu-item>
+    <el-menu-item index="5" @click="openNodeInfo"> <el-button :plain="true" size="small" type="info">info</el-button> </el-menu-item>
     <el-menu-item index="5">{{status}}</el-menu-item>
     <el-menu-item index="6">Connected Peers: {{node.peers.length}}</el-menu-item>
     <el-menu-item index="7"></el-menu-item>
