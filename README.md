@@ -1,6 +1,7 @@
 # js-ipfs-browser-benchmarks
 
 > Benchmarking tests for js-ipfs streaming files in browser
+> For a quick preview, check the online [demo](https://goga-m.github.io/js-ipfs-browser-performance/)
 
 ## Build Setup
 
