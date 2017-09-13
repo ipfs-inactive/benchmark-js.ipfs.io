@@ -8,7 +8,7 @@
         <h1>IPFS Browser Stream Benchmarks</h1>
         <p>A small utility to test ipfs's get streaming performance (especially for large files) and see some metrics.</p>
         <p> Choose one of the preselected files below or test with a custom one.</p>
-        <p>Using the official IPFS (<a href="https://github.com/ipfs/js-ipfs" target="_blank">js-ipfs</a>) v0.25.4</p>
+        <p>Using the official IPFS (<a href="https://github.com/ipfs/js-ipfs" target="_blank">js-ipfs</a>) v0.26.0</p>
         <br>
           <el-button v-if="status === 'stopped'" type="primary" size="large" @click="startNode">Start your node</el-button>
       </div>
